@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "legoify"
+dynamic = ["version"]
+description = 'A program to create a mosaic from an image using LEGO colors and output reference pictures & the part list.'
+readme = "README.md"
+requires-python = ">=3.9.2"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+keywords = ["mosaic","art","diy"]
+authors = [
+  { name = "Russell Carpenella", email = "russellcarpenella@gmail.com" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3.9",
+]
+dependencies = [
+  "pyxelate @ git+https://github.com/sedthh/pyxelate.git@fed220be1f97014d9d8607547cc1d4340044f7d9",
+]
+
+[project.urls]
+Documentation = "https://github.com/russ3llc/legoify#readme"
+Issues = "https://github.com/russ3llc/legoify/issues"
+Source = "https://github.com/russ3llc/legoify"
+
+[project.scripts]
+legoify = "legoify:main"
+
+[tool.hatch.version]
+path = "src/legoify/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/legoify tests}"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.coverage.run]
+source_pkgs = ["legoify", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/legoify/__about__.py",
+]
+
+[tool.coverage.paths]
+legoify = ["src/legoify", "*/legoify/src/legoify"]
+tests = ["tests", "*/legoify/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
