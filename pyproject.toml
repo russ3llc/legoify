@@ -27,7 +27,7 @@ Issues = "https://github.com/russ3llc/legoify/issues"
 Source = "https://github.com/russ3llc/legoify"
 
 [project.scripts]
-legoify = "legoify:main"
+legoify = "legoify.main:main"
 
 [tool.hatch.version]
 path = "src/legoify/__about__.py"
