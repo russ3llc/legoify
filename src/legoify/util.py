@@ -2,7 +2,8 @@ from pathlib import Path
 
 def get_lego_colors(colors_only=False):
     colors = []
-    with open(Path("./LEGO.GPL"), "r") as f:
+    gpl_path = Path(__file__).parent / "LEGO.GPL"
+    with open(gpl_path, "r") as f:
         lines = f.readlines()
     for line in lines[4:]:
         r = int(line[0:3].strip())
