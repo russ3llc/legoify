@@ -116,14 +116,18 @@ def main():
     args = parser.parse_args()
     args.width = args.height if args.width is None else args.width
     pyx_image = pixelate(Path(args.input_path), args.height, args.width, args.dither)
-    io.imsave(args.output_dir + "to_scale.png", pyx_image)
+    # io.imsave(args.output_dir + "to_scale.png", pyx_image)
 
+    out_path = Path(args.output_dir)
+    Path.mkdir(out_path, parents=True, exist_ok=True)
     zoomed = get_zoomed_image(pyx_image)
     bordered = draw_pixel_indicators(zoomed)
-    io.imsave(args.output_dir + "output.png", bordered)
+    io.imsave(Path(out_path, "output.png"), bordered)
 
     part_list = get_part_list(pyx_image)
-    with open(Path(args.output_dir, "part_list.csv"), "w") as f:
+    csv_out_path = Path(args.output_dir)
+    Path.mkdir(csv_out_path, parents=True, exist_ok=True)
+    with open(Path(csv_out_path, "part_list.csv"), "w") as f:
         writer = csv.DictWriter(f, fieldnames=["elementId", "quantity", "colorName"])
         # writer = csv.DictWriter(f, fieldnames=["part_no", "count", "color_name"])
         writer.writeheader()
@@ -131,13 +135,15 @@ def main():
 
     if args.color_filters:
         used_colors_names = [p["colorName"] for p in part_list]
+        colors_path = Path(args.output_dir, "colors")
+        Path.mkdir(colors_path, parents=True, exist_ok=True)
         for color_name in used_colors_names:
             color = util.color_name_to_rgb(color_name)
             color_filter = get_color_filter(pyx_image, color)
             zoomed_color_filter = get_zoomed_image(color_filter)
             bordered_color_filter = draw_pixel_indicators(zoomed_color_filter)
             io.imsave(
-                Path(args.output_dir, "colors", color_name + ".png"),
+                Path(colors_path, color_name + ".png"),
                 bordered_color_filter,
             )
 
