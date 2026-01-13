@@ -23,9 +23,6 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT][license-shield]][license-url]
-<!-- [![LinkedIn][linkedin-shield]][linkedin-url] -->
-
-
 
 <!-- PROJECT LOGO -->
 <br />
@@ -37,7 +34,7 @@
 <h3 align="center">Legoify</h3>
 
   <p align="center">
-    A program to create a mosaic from an image using LEGO colors and output reference pictures & the part list.
+    A CLI to create a mosaic from an image using LEGO colors and output reference pictures & the part list.
     <br />
     <a href="https://github.com/russ3llc/legoify"><strong>Explore the docs »</strong></a>
     <br />
@@ -50,101 +47,48 @@
   </p>
 </div>
 
-
-
-<!-- TABLE OF CONTENTS -->
-<!-- <details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details> -->
-
-
-
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<!-- [![Product Name Screen Shot][product-screenshot]](https://russhasasite.com) -->
 ![Legoify Screen Shot][product-screenshot]
 
 Legoify is a command line tool written in Python that helps you make mosaics using building blocks.
-
-<!-- <p align="right">(<a href="#readme-top">back to top</a>)</p> -->
-
-
 
 ### Built With
 
 * [![Python][Python]][Python-url]
 
-<!-- <p align="right">(<a href="#readme-top">back to top</a>)</p> -->
-
-
-
 <!-- GETTING STARTED -->
 ## Getting Started
-
-todo
-
 ### Prerequisites
 
-todo
-* Python
-  ```python
-  print('Hello, World!')
-  ```
+* Python 3.9.2 - plans to support newer versions of Python: https://github.com/russ3llc/legoify/issues/2
 
 ### Installation
-
-todo
-
-<!-- <p align="right">(<a href="#readme-top">back to top</a>)</p> -->
-
-
+```
+pip install git+https://github.com/russ3llc/legoify.git --upgrade
+```
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+```
+legoify "path/to/source/image.png" 32
+```
+### Positional Arguments
+| Argument   | Description                    | Example                                                     |
+| --------   | -----------                    | -------                                                     |
+| input_path | The path to the input image    | "C:\Users\hiimr\Pictures\Album Art\Father Of The Bride.jpg" |
+| height     | The height of the output image | 48                                                          |
 
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-<!-- <p align="right">(<a href="#readme-top">back to top</a>)</p> -->
-
-
-
-<!-- ROADMAP
-## Roadmap
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
-
-See the [open issues](https://github.com/russ3llc/legoify/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p> -->
-
-
+### Options
+| Option          | Short Code | Description                                                                                                        | Example                                 |
+| ------          | ---------- | -----------                                                                                                        | -------                                 |
+| --help          | -h         | Lists arguments and options                                                                                        | N/A                                     |
+| --output_dir    | -o         | The path to output images. Defaults to 'Output'                                                                    | "C:\Users\hiimr\Pictures\Album Mosaics" |
+| --width         | -w         | The width of the output image. Defaults to height if not specified                                                 | 48                                      |
+| --dither        | -d         | The dither algorithm to use - `None` (default), `naive`, `bayer`, `floyd`, `atkinson` (ordered fastest to slowest) | naive                                   |
+| --color_filters | -c         | Save additional reference images of individual colors                                                              | N/A (this option is a flag)             |
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -160,46 +104,23 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<!-- <p align="right">(<a href="#readme-top">back to top</a>)</p> -->
-
 ### Top contributors:
 
 <a href="https://github.com/russ3llc/legoify/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=russ3llc/legoify" alt="contrib.rocks image" />
 </a>
 
-
-
 <!-- LICENSE -->
 ## License
 
 Distributed under the MIT. See `LICENSE.txt` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
-<!-- ## Contact
-
-Your Name - russellcarpenella@gmail.com
-
-Project Link: [https://github.com/russ3llc/legoify](https://github.com/russ3llc/legoify) -->
-
-<!-- <p align="right">(<a href="#readme-top">back to top</a>)</p> -->
-
-
-
 <!-- ACKNOWLEDGMENTS -->
-<!-- ## Acknowledgments
+## Acknowledgments
 
-* []()
-* []()
-* []() -->
+* [Pyxelate](https://github.com/sedthh//tree/master/pyxelate) - This open source project is what does most of the heavy lifting (doing the actual pixelation) in this project.
 
-<!-- <p align="right">(<a href="#readme-top">back to top</a>)</p> -->
-
-
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
@@ -214,7 +135,6 @@ Project Link: [https://github.com/russ3llc/legoify](https://github.com/russ3llc/
 [license-shield]: https://img.shields.io/github/license/russ3llc/legoify.svg?style=for-the-badge
 [license-url]: https://github.com/russ3llc/legoify/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-<!-- [linkedin-url]: https://linkedin.com/in/linkedin_username -->
 [product-screenshot]: images/screenshot.png
 <!-- Shields.io badges. You can a comprehensive list with many more badges at: https://github.com/inttter/md-badges -->
 [Python]: https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff

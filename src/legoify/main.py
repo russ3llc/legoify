@@ -45,7 +45,7 @@ parser.add_argument(
     "-c",
     "--color_filters",
     action="store_true",
-    help="Save additional images of indivual colors",
+    help="Save additional reference images of individual colors",
 )
 
 
