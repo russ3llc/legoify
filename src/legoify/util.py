@@ -1,6 +1,6 @@
 def get_lego_colors(colors_only=False):
     colors = []
-    with open("LEGO.gpl", "r") as f:
+    with open(".\LEGO.gpl", "r") as f:
         lines = f.readlines()
     for line in lines[4:]:
         r = int(line[0:3].strip())
