@@ -1,1 +1,5 @@
 pyxelate @ git+https://github.com/sedthh/pyxelate.git@fed220be1f97014d9d8607547cc1d4340044f7d9
+scikit-learn>=0.24.1
+scikit-image>=0.19.1
+numba>=0.53.1
+matplotlib

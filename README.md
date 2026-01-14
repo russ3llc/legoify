@@ -62,7 +62,7 @@ Legoify is a command line tool written in Python that helps you make mosaics usi
 ## Getting Started
 ### Prerequisites
 
-* Python 3.9.2 - plans to support newer versions of Python: https://github.com/russ3llc/legoify/issues/2
+* Python
 
 See [pyenv](https://github.com/pyenv/pyenv) or [pyenv-windows](https://github.com/pyenv-win/pyenv-win) for Python version management
 
@@ -127,7 +127,7 @@ Distributed under the MIT. See `LICENSE.txt` for more information.
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* [Pyxelate](https://github.com/sedthh//tree/master/pyxelate) - This open source project is what does most of the heavy lifting (doing the actual pixelation) in this project.
+* [Pyxelate](https://github.com/sedthh/pyxelate) - This open source project is what does most of the heavy lifting (doing the actual pixelation) in this project.
 * The album art in this Read Me is from Vampire Weekend's 2019 album "Father of the Bride" and is property of Columbia Records/SONY Music.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
