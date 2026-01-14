@@ -64,6 +64,8 @@ Legoify is a command line tool written in Python that helps you make mosaics usi
 
 * Python 3.9.2 - plans to support newer versions of Python: https://github.com/russ3llc/legoify/issues/2
 
+See [pyenv](https://github.com/pyenv/pyenv) or [pyenv-windows](https://github.com/pyenv-win/pyenv-win) for Python version management
+
 ### Installation
 ```
 pip install git+https://github.com/russ3llc/legoify.git --upgrade
@@ -88,7 +90,14 @@ legoify "path/to/source/image.png" 32
 | --output_dir    | -o         | The path to output images. Defaults to 'Output'                                                                    | "C:\Users\hiimr\Pictures\Album Mosaics" |
 | --width         | -w         | The width of the output image. Defaults to height if not specified                                                 | 48                                      |
 | --dither        | -d         | The dither algorithm to use - `None` (default), `naive`, `bayer`, `floyd`, `atkinson` (ordered fastest to slowest) | naive                                   |
-| --color_filters | -c         | Save additional reference images of individual colors                                                              | N/A (this option is a flag)             |
+| --color_filters | -c         | Save additional reference images of individual colors (see below)                                                  | N/A (this option is a flag)             |
+
+<br>
+
+<figure>
+  <img src="images/color-filter.png" alt="Album cover with only blue shown."/>
+  <figcaption>"Bright Blue.jpg" produced when ran with --color_filters option</figcaption>
+</figure>
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -119,6 +128,7 @@ Distributed under the MIT. See `LICENSE.txt` for more information.
 ## Acknowledgments
 
 * [Pyxelate](https://github.com/sedthh//tree/master/pyxelate) - This open source project is what does most of the heavy lifting (doing the actual pixelation) in this project.
+* The album art in this Read Me is from Vampire Weekend's 2019 album "Father of the Bride" and is property of Columbia Records/SONY Music.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
