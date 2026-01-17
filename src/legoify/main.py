@@ -1,9 +1,11 @@
 # python 3.9.2
 import csv
 import argparse
+import warnings
 import numpy as np
 from pathlib import Path
 from skimage import io
+from skimage.util import img_as_ubyte
 from pyxelate import Pyx, Pal  # https://github.com/sedthh/pyxelate/tree/master
 
 try:
@@ -60,35 +62,59 @@ def pixelate(image_path, height, width=None, dither=None):
     return out_image
 
 
-def get_color_filter(in_image, color):
+def get_color_filter(pyx_image, color):
     mask = (
-        (in_image[:, :, 0] == color[0])
-        & (in_image[:, :, 1] == color[1])
-        & (in_image[:, :, 2] == color[2])
+        (pyx_image[:, :, 0] == color[0])
+        & (pyx_image[:, :, 1] == color[1])
+        & (pyx_image[:, :, 2] == color[2])
     )
-    mask = np.reshape(np.repeat(mask, 3), np.shape(in_image))
+    mask = np.reshape(np.repeat(mask, 3), np.shape(pyx_image))
     bg_color = 0 if util.black_or_white(color) == [0, 0, 0] else 255
-    return np.where(mask, in_image, bg_color)
+    return np.where(mask, pyx_image, bg_color)
 
 
-def get_zoomed_image(in_image, scale=12):
-    rows_zoomed = np.repeat(in_image, scale, axis=0)
+def get_zoomed_image(pyx_image, scale=12):
+    rows_zoomed = np.repeat(pyx_image, scale, axis=0)
     zoomed = np.repeat(rows_zoomed, scale, axis=1)
     return zoomed
 
 
-def draw_pixel_indicators(in_image, scale=12):
+def get_indicator_color_matrix(zoomed_image):
+    return np.array(
+        list(map(util.black_or_white, zoomed_image.reshape(-1, 3)))
+    ).reshape(zoomed_image.shape)
+
+
+def draw_pixel_indicators(zoomed_image, scale=12):
+    indicator = get_indicator_color_matrix(zoomed_image)
+
     # border
-    in_image[0:, 0::scale] = [0, 0, 0]
-    in_image[0:, scale - 1 :: scale] = [0, 0, 0]
-    in_image[0::scale, 0:] = [0, 0, 0]
-    in_image[scale - 1 :: scale, 0:] = [0, 0, 0]
+    border_mask = np.reshape(
+        np.repeat(np.repeat(False, zoomed_image.shape[0]), zoomed_image.shape[1]),
+        [zoomed_image.shape[0], zoomed_image.shape[1]],
+    )
+    border_mask[0:, 0::scale] = True
+    border_mask[0:, scale - 1 :: scale] = True
+    border_mask[0::scale, 0:] = True
+    border_mask[scale - 1 :: scale, 0:] = True
+    border_mask = np.repeat(border_mask, 3).reshape(zoomed_image.shape)
+    
+    with warnings.catch_warnings(action="ignore", category=UserWarning):
+        bordered_image = img_as_ubyte(np.where(border_mask, indicator, zoomed_image))
+
     # center
-    in_image[5::scale, 5::scale] = [255, 255, 255]
-    in_image[6::scale, 5::scale] = [255, 255, 255]
-    in_image[5::scale, 6::scale] = [255, 255, 255]
-    in_image[6::scale, 6::scale] = [255, 255, 255]
-    return in_image
+    center_mask = np.reshape(
+        np.repeat(np.repeat(False, zoomed_image.shape[0]), zoomed_image.shape[1]),
+        [zoomed_image.shape[0], zoomed_image.shape[1]],
+    )
+    center_mask[5::scale, 5::scale] = True
+    center_mask[6::scale, 5::scale] = True
+    center_mask[5::scale, 6::scale] = True
+    center_mask[6::scale, 6::scale] = True
+    center_mask = np.repeat(center_mask, 3).reshape(zoomed_image.shape)
+
+    with warnings.catch_warnings(action="ignore", category=UserWarning):
+        return img_as_ubyte(np.where(center_mask, indicator, bordered_image))
 
 
 def get_part_list(out_im):
@@ -110,7 +136,6 @@ def get_part_list(out_im):
     ]
     # Remove colors with 0 count
     return [p for p in part_list if p["quantity"] > 0]
-
 
 def main():
     args = parser.parse_args()
