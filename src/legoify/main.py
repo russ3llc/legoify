@@ -89,18 +89,11 @@ def draw_pixel_indicators(zoomed_image, scale=12):
     indicator = get_indicator_color_matrix(zoomed_image)
 
     # border
-    border_mask = np.reshape(
-        np.repeat(np.repeat(False, zoomed_image.shape[0]), zoomed_image.shape[1]),
-        [zoomed_image.shape[0], zoomed_image.shape[1]],
-    )
-    border_mask[0:, 0::scale] = True
-    border_mask[0:, scale - 1 :: scale] = True
-    border_mask[0::scale, 0:] = True
-    border_mask[scale - 1 :: scale, 0:] = True
-    border_mask = np.repeat(border_mask, 3).reshape(zoomed_image.shape)
-    
-    with warnings.catch_warnings(action="ignore", category=UserWarning):
-        bordered_image = img_as_ubyte(np.where(border_mask, indicator, zoomed_image))
+    border_color = [42, 42, 42]
+    zoomed_image[0:, 0::scale] = border_color
+    zoomed_image[0:, scale - 1 :: scale] = border_color
+    zoomed_image[0::scale, 0:] = border_color
+    zoomed_image[scale - 1 :: scale, 0:] = border_color
 
     # center
     center_mask = np.reshape(
@@ -114,7 +107,7 @@ def draw_pixel_indicators(zoomed_image, scale=12):
     center_mask = np.repeat(center_mask, 3).reshape(zoomed_image.shape)
 
     with warnings.catch_warnings(action="ignore", category=UserWarning):
-        return img_as_ubyte(np.where(center_mask, indicator, bordered_image))
+        return img_as_ubyte(np.where(center_mask, indicator, zoomed_image))
 
 
 def get_part_list(out_im):
