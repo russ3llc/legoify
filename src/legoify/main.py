@@ -3,6 +3,7 @@ import csv
 import argparse
 import warnings
 import numpy as np
+from collections import defaultdict
 from pathlib import Path
 from skimage import io
 from skimage.util import img_as_ubyte
@@ -130,6 +131,44 @@ def get_part_list(out_im):
     # Remove colors with 0 count
     return [p for p in part_list if p["quantity"] > 0]
 
+
+def should_split_part_list(part_list):
+    quantities = [p["quantity"] for p in part_list]
+    return max(quantities) > 999
+
+
+def split_part_list(part_list, max_quantity=999):
+    chunks_by_color = defaultdict(list)
+
+    for part in part_list:
+        remaining = part["quantity"]
+        while remaining > 0:
+            chunk = min(max_quantity, remaining)
+            remaining -= chunk
+            chunks_by_color[part["colorName"]].append(
+                {
+                    "colorName": part["colorName"],
+                    "elementId": part["elementId"],
+                    "quantity": chunk,
+                }
+            )
+
+    num_lists = max(len(chunks) for chunks in chunks_by_color.values())
+
+    result_lists = [[] for _ in range(num_lists)]
+
+    for part in part_list:
+        color = part["colorName"]
+        chunks = chunks_by_color[color]
+
+        for i, chunk in enumerate(chunks):
+            result_lists[i].append(chunk)
+
+        chunks_by_color[color] = []
+
+    return result_lists
+
+
 def main():
     args = parser.parse_args()
     args.width = args.height if args.width is None else args.width
@@ -143,13 +182,22 @@ def main():
     io.imsave(Path(out_path, "output.png"), bordered)
 
     part_list = get_part_list(pyx_image)
+    if should_split_part_list(part_list):
+        warnings.warn("Part list contains more than 999 of the same color. Splitting into multiple part lists.")
+        part_lists = split_part_list(part_list)
+    else:
+        part_lists = [part_list]
     csv_out_path = Path(args.output_dir)
     Path.mkdir(csv_out_path, parents=True, exist_ok=True)
-    with open(Path(csv_out_path, "part_list.csv"), "w") as f:
-        writer = csv.DictWriter(f, fieldnames=["elementId", "quantity", "colorName"])
-        # writer = csv.DictWriter(f, fieldnames=["part_no", "count", "color_name"])
-        writer.writeheader()
-        writer.writerows(part_list)
+    for i, pl in enumerate(part_lists):
+        file_name = "part_list.csv" if i == 0 else f"part_list_{i}.csv"
+        with open(Path(csv_out_path, file_name), "w") as f:
+            writer = csv.DictWriter(
+                f, fieldnames=["elementId", "quantity", "colorName"]
+            )
+            # writer = csv.DictWriter(f, fieldnames=["part_no", "count", "color_name"])
+            writer.writeheader()
+            writer.writerows(pl)
 
     if args.color_filters:
         used_colors_names = [p["colorName"] for p in part_list]
