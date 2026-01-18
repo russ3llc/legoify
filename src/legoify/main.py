@@ -4,7 +4,6 @@ import argparse
 import warnings
 import numpy as np
 from collections import defaultdict
-from math import ceil
 from pathlib import Path
 from skimage import io
 from skimage.util import img_as_ubyte
