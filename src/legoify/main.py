@@ -6,16 +6,14 @@ import numpy as np
 from collections import defaultdict
 from pathlib import Path
 from skimage import io
-from skimage.util import img_as_ubyte
+
+# from skimage.util import img_as_ubyte
 from pyxelate import Pyx, Pal  # https://github.com/sedthh/pyxelate/tree/master
 
-try:
-    from . import util
-except ImportError:
-    try:
-        from legoify import util
-    except ImportError:
-        import util
+import util
+from indicator import indicator
+
+SCALE = 12
 
 parser = argparse.ArgumentParser(
     description="A program to create a mosiac from an image using LEGO colors, and output the part list."
@@ -80,35 +78,10 @@ def get_zoomed_image(pyx_image, scale=12):
     return zoomed
 
 
-def get_indicator_color_matrix(zoomed_image):
-    return np.array(
-        list(map(util.black_or_white, zoomed_image.reshape(-1, 3)))
-    ).reshape(zoomed_image.shape)
-
-
-def draw_pixel_indicators(zoomed_image, scale=12):
-    indicator = get_indicator_color_matrix(zoomed_image)
-
-    # border
-    border_color = [42, 42, 42]
-    zoomed_image[0:, 0::scale] = border_color
-    zoomed_image[0:, scale - 1 :: scale] = border_color
-    zoomed_image[0::scale, 0:] = border_color
-    zoomed_image[scale - 1 :: scale, 0:] = border_color
-
-    # center
-    center_mask = np.reshape(
-        np.repeat(np.repeat(False, zoomed_image.shape[0]), zoomed_image.shape[1]),
-        [zoomed_image.shape[0], zoomed_image.shape[1]],
-    )
-    center_mask[5::scale, 5::scale] = True
-    center_mask[6::scale, 5::scale] = True
-    center_mask[5::scale, 6::scale] = True
-    center_mask[6::scale, 6::scale] = True
-    center_mask = np.repeat(center_mask, 3).reshape(zoomed_image.shape)
-
-    with warnings.catch_warnings(action="ignore", category=UserWarning):
-        return img_as_ubyte(np.where(center_mask, indicator, zoomed_image))
+def draw_block_indicator(zoomed_image):
+    fit_shape = (zoomed_image.shape[0] // SCALE, zoomed_image.shape[1] // SCALE, 1)
+    indicator_fitted = np.tile(indicator, fit_shape)
+    return util.mix_array(zoomed_image, indicator_fitted).astype(np.uint8)
 
 
 def get_part_list(out_im):
@@ -178,12 +151,17 @@ def main():
     out_path = Path(args.output_dir)
     Path.mkdir(out_path, parents=True, exist_ok=True)
     zoomed = get_zoomed_image(pyx_image)
-    bordered = draw_pixel_indicators(zoomed)
+    print("zoomed")
+    print(zoomed.shape)
+    # bordered = draw_pixel_indicators(zoomed)
+    bordered = draw_block_indicator(zoomed)
     io.imsave(Path(out_path, "output.png"), bordered)
 
     part_list = get_part_list(pyx_image)
     if should_split_part_list(part_list):
-        warnings.warn("Part list contains more than 999 of the same color. Splitting into multiple part lists.")
+        warnings.warn(
+            "Part list contains more than 999 of the same color. Splitting into multiple part lists."
+        )
         part_lists = split_part_list(part_list)
     else:
         part_lists = [part_list]
@@ -207,7 +185,10 @@ def main():
             color = util.color_name_to_rgb(color_name)
             color_filter = get_color_filter(pyx_image, color)
             zoomed_color_filter = get_zoomed_image(color_filter)
-            bordered_color_filter = draw_pixel_indicators(zoomed_color_filter)
+            print("color zoomed")
+            print(zoomed_color_filter.shape)
+            # bordered_color_filter = draw_pixel_indicators(zoomed_color_filter)
+            bordered_color_filter = draw_block_indicator(zoomed_color_filter)
             io.imsave(
                 Path(colors_path, color_name + ".png"),
                 bordered_color_filter,

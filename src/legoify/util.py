@@ -1,4 +1,6 @@
+import numpy as np
 from pathlib import Path
+
 
 def get_lego_colors(colors_only=False):
     colors = []
@@ -17,11 +19,13 @@ def get_lego_colors(colors_only=False):
         colors.append([(r, g, b), name, partno])
     return colors
 
+
 def color_name_to_rgb(name):
     colors = get_lego_colors(False)
     for color in colors:
         if color[1] == name:
             return color[0]
+
 
 def black_or_white(color):
     r, g, b = color
@@ -51,3 +55,26 @@ def black_or_white(color):
         return [0, 0, 0]  # Use black text
     else:
         return [255, 255, 255]  # Use white text
+
+
+def mix(base, overlay, alpha):
+    base_d = base / 255.0
+    overlay_d = overlay / 255.0
+    alpha_d = alpha / 255.0
+    distance = overlay_d - base_d
+    return (base_d + alpha_d * distance) * 255
+
+
+def mix_array(base_array, overlay_array):
+    print(f'base: {base_array.shape}, overlay: {overlay_array.shape}')
+    # Add alpha
+    if np.shape(base_array)[2] < 4:
+        base_alpha = (
+            np.ones(base_array.shape[:2], dtype=base_array.dtype) * 255
+        )  # For uint8
+        base_array = np.dstack((base_array, base_alpha))
+    base_rgb = base_array[..., :-1]
+    overlay_rgb = overlay_array[..., :-1]
+    alpha = overlay_array[..., -1].repeat(3).reshape(base_array.shape[:2] + (3,))
+
+    return mix(base_rgb, overlay_rgb, alpha)
