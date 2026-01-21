@@ -151,8 +151,6 @@ def main():
     out_path = Path(args.output_dir)
     Path.mkdir(out_path, parents=True, exist_ok=True)
     zoomed = get_zoomed_image(pyx_image)
-    print("zoomed")
-    print(zoomed.shape)
     # bordered = draw_pixel_indicators(zoomed)
     bordered = draw_block_indicator(zoomed)
     io.imsave(Path(out_path, "output.png"), bordered)
@@ -185,8 +183,6 @@ def main():
             color = util.color_name_to_rgb(color_name)
             color_filter = get_color_filter(pyx_image, color)
             zoomed_color_filter = get_zoomed_image(color_filter)
-            print("color zoomed")
-            print(zoomed_color_filter.shape)
             # bordered_color_filter = draw_pixel_indicators(zoomed_color_filter)
             bordered_color_filter = draw_block_indicator(zoomed_color_filter)
             io.imsave(
