@@ -66,7 +66,6 @@ def mix(base, overlay, alpha):
 
 
 def mix_array(base_array, overlay_array):
-    print(f'base: {base_array.shape}, overlay: {overlay_array.shape}')
     # Add alpha
     if np.shape(base_array)[2] < 4:
         base_alpha = (
