@@ -20,45 +20,53 @@ try:
 except ImportError:
     import util
 
-parser = argparse.ArgumentParser(
-    description="A program to create a mosiac from an image using LEGO colors, and output the part list."
-)
-parser.add_argument("input_path", type=str, help="The path to the input image")
-parser.add_argument("height", type=int, help="The height of the output image")
-parser.add_argument(
-    "-o",
-    "--output_dir",
-    type=str,
-    help="The path to output images. Defaults to 'Output'",
-    default="Output\\",
-)
-parser.add_argument(
-    "-w",
-    "--width",
-    type=int,
-    default=None,
-    help="The width of the output image. Defaults to height if not specified",
-)
-parser.add_argument(
-    "-d",
-    "--dither",
-    type=str,
-    default=None,
-    help="The dither algorithm to use - None (default), 'naive', 'bayer', 'floyd', 'atkinson' (ordered fastest to slowest)",
-    choices=[None, "naive", "bayer", "floyd", "atkinson"],
-)
-parser.add_argument(
-    "-c",
-    "--color_filters",
-    action="store_true",
-    help="Save additional reference images of individual colors",
-)
-parser.add_argument(
-    "-v",
-    "--verbose",
-    action="store_true",
-    help="Print performance timers",
-)
+
+def parse_args(skip_args=False):
+    parser = argparse.ArgumentParser(
+        description="A program to create a mosiac from an image using LEGO colors, and output the part list."
+    )
+
+    parser.add_argument("input_path", type=str, help="The path to the input image")
+    parser.add_argument(
+        "-o",
+        "--output_dir",
+        type=str,
+        help="The path to output images. Defaults to 'Output'",
+        default="Output\\",
+    )
+    parser.add_argument(
+        "-c",
+        "--color_filters",
+        action="store_true",
+        help="Save additional reference images of individual colors",
+    )
+
+    if not skip_args:
+        parser.add_argument("height", type=int, help="The height of the output image")
+        parser.add_argument(
+            "-w",
+            "--width",
+            type=int,
+            default=None,
+            help="The width of the output image. Defaults to height if not specified",
+        )
+        parser.add_argument(
+            "-d",
+            "--dither",
+            type=str,
+            default=None,
+            help="The dither algorithm to use - None (default), 'naive', 'bayer', 'floyd', 'atkinson' (ordered fastest to slowest)",
+            choices=[None, "naive", "bayer", "floyd", "atkinson"],
+        )
+        parser.add_argument(
+            "-v",
+            "--verbose",
+            action="store_true",
+            help="Print performance timers",
+        )
+
+    return parser.parse_args()
+
 
 def write_part_list(part_list, output_dir):
     if parts.should_split_part_list(part_list):
@@ -79,6 +87,7 @@ def write_part_list(part_list, output_dir):
             writer.writeheader()
             writer.writerows(pl)
 
+
 def write_color_filters(part_list, pyx_image, output_dir):
     used_colors_names = [p["colorName"] for p in part_list]
     colors_path = Path(output_dir, "colors")
@@ -93,54 +102,71 @@ def write_color_filters(part_list, pyx_image, output_dir):
             bordered_color_filter,
         )
 
+
+def load_existing():
+    args = parse_args(skip_args=True)
+
+    out_path = Path(args.output_dir)
+    Path.mkdir(out_path, parents=True, exist_ok=True)
+
+    pyx_image = io.imread(Path(args.input_path))
+    zoomed_image = image.get_zoomed_image(pyx_image)
+    bordered_image = image.draw_block_indicator(zoomed_image)
+    io.imsave(Path(out_path, "output.png"), bordered_image)
+
+    part_list = parts.get_part_list(pyx_image)
+    write_part_list(part_list, args.output_dir)
+
+    if args.color_filters:
+        write_color_filters(part_list, pyx_image, args.output_dir)
+    
+    print("Done!")
+
 def main():
     total_start_time = perf_counter()
-    args = parser.parse_args()
+    args = parse_args()
     args.width = args.height if args.width is None else args.width
 
     out_path = Path(args.output_dir)
     Path.mkdir(out_path, parents=True, exist_ok=True)
 
-    if args.verbose: 
+    if args.verbose:
         print("Pyxelating...")
         start_time = perf_counter()
-        pyx_image = image.pixelate(Path(args.input_path), args.height, args.width, args.dither)
+    pyx_image = image.pixelate(
+        Path(args.input_path), args.height, args.width, args.dither
+    )
+    if args.verbose:
         end_time = perf_counter()
         print(f"Pyxelated in {end_time - start_time:.2f} seconds\n")
-    else:
-        pyx_image = image.pixelate(Path(args.input_path), args.height, args.width, args.dither)
 
-    if args.verbose: 
+    if args.verbose:
         print("Zooming...")
         start_time = perf_counter()
-        zoomed = image.get_zoomed_image(pyx_image)
+    zoomed = image.get_zoomed_image(pyx_image)
+    if args.verbose:
         end_time = perf_counter()
         print(f"Zoomed in {end_time - start_time:.2f} seconds\n")
-    else:
-        zoomed = image.get_zoomed_image(pyx_image)
 
     if args.verbose:
         print("Drawing block indicator...")
         start_time = perf_counter()
-        bordered = image.draw_block_indicator(zoomed)
+    bordered_image = image.draw_block_indicator(zoomed)
+    if args.verbose:
         end_time = perf_counter()
         print(f"Drawn in {end_time - start_time:.2f} seconds\n")
-    else:
-        bordered = image.draw_block_indicator(zoomed)
 
     io.imsave(Path(out_path, "pyx.png"), pyx_image)
-    io.imsave(Path(out_path, "output.png"), bordered)
+    io.imsave(Path(out_path, "output.png"), bordered_image)
 
-    if args.verbose: 
+    if args.verbose:
         print("Generating part list...")
         start_time = perf_counter()
-        part_list = parts.get_part_list(pyx_image)
-        write_part_list(part_list, args.output_dir)
+    part_list = parts.get_part_list(pyx_image)
+    write_part_list(part_list, args.output_dir)
+    if args.verbose:
         end_time = perf_counter()
         print(f"Generated in {end_time - start_time:.2f} seconds\n")
-    else:
-        part_list = parts.get_part_list(pyx_image)
-        write_part_list(part_list, args.output_dir)
 
     if args.color_filters and args.verbose:
         print("Generating color filters...")
@@ -151,7 +177,7 @@ def main():
     elif args.color_filters:
         write_color_filters(part_list, pyx_image, args.output_dir)
 
-    if args.verbose: 
+    if args.verbose:
         end_time = perf_counter()
         print(f"Done in {end_time - total_start_time:.2f} seconds!\n")
     else:
