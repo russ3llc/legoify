@@ -15,7 +15,10 @@ try:
 except ImportError:
     import util
 
-from indicator import indicator
+try:
+    from legoify import indicator
+except ImportError:
+    import indicator
 
 SCALE = 12
 
@@ -84,7 +87,7 @@ def get_zoomed_image(pyx_image, scale=12):
 
 def draw_block_indicator(zoomed_image):
     fit_shape = (zoomed_image.shape[0] // SCALE, zoomed_image.shape[1] // SCALE, 1)
-    indicator_fitted = np.tile(indicator, fit_shape)
+    indicator_fitted = np.tile(indicator.indicator, fit_shape)
     return util.mix_array(zoomed_image, indicator_fitted).astype(np.uint8)
 
 
