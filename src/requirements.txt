@@ -1,1 +1,1 @@
-pyxelate @ git+https://github.com/russ3llc/pyxelate.git@python-version-update
+pyxelate @ git+https://github.com/sedthh/pyxelate.git
