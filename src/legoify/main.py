@@ -153,7 +153,7 @@ def main():
     args = parser.parse_args()
     args.width = args.height if args.width is None else args.width
     pyx_image = pixelate(Path(args.input_path), args.height, args.width, args.dither)
-    io.imsave(args.output_dir + "to_scale.png", pyx_image)
+    io.imsave(Path(args.output_dir, "to_scale.png"), pyx_image)
 
     out_path = Path(args.output_dir)
     Path.mkdir(out_path, parents=True, exist_ok=True)
