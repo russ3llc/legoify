@@ -152,13 +152,12 @@ def split_part_list(part_list, max_quantity=999):
 def main():
     args = parser.parse_args()
     args.width = args.height if args.width is None else args.width
-    pyx_image = pixelate(Path(args.input_path), args.height, args.width, args.dither)
-    to_scale_path = Path(args.output_dir, "to_scale.png")
-    Path.mkdir(to_scale_path, parents=True, exist_ok=True)
-    io.imsave(to_scale_path, pyx_image)
 
     out_path = Path(args.output_dir)
     Path.mkdir(out_path, parents=True, exist_ok=True)
+
+    pyx_image = pixelate(Path(args.input_path), args.height, args.width, args.dither)
+    io.imsave(Path(out_path, "pyx.png"), pyx_image)
     zoomed = get_zoomed_image(pyx_image)
     # bordered = draw_pixel_indicators(zoomed)
     bordered = draw_block_indicator(zoomed)
