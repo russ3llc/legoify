@@ -18,7 +18,7 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
 ]
 dependencies = [
-  "pyxelate @ git+https://github.com/sedthh/pyxelate.git",
+  "pyxelate @ git+https://github.com/sedthh/pyxelate.git@f4a046b8b148370a20ab7681fce160551e5fc49b",
 ]
 
 [project.urls]
