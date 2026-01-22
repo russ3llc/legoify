@@ -90,6 +90,7 @@ legoify "path/to/source/image.png" 32
 | --output_dir    | -o         | The path to output images. Defaults to 'Output'                                                                    | "C:\Users\hiimr\Pictures\Album Mosaics" |
 | --width         | -w         | The width of the output image. Defaults to height if not specified                                                 | 48                                      |
 | --dither        | -d         | The dither algorithm to use - `None` (default), `naive`, `bayer`, `floyd`, `atkinson` (ordered fastest to slowest) | naive                                   |
+| --verbose       | -v         | Display performance timers                                                                                         | N/A (this option is a flag)             |
 | --color_filters | -c         | Save additional reference images of individual colors (see below)                                                  | N/A (this option is a flag)             |
 
 <br>

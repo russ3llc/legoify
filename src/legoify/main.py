@@ -3,6 +3,7 @@ import argparse
 import warnings
 from pathlib import Path
 from skimage import io
+from time import perf_counter
 
 try:
     from legoify import image
@@ -52,6 +53,12 @@ parser.add_argument(
     action="store_true",
     help="Save additional reference images of individual colors",
 )
+parser.add_argument(
+    "-v",
+    "--verbose",
+    action="store_true",
+    help="Print performance timers",
+)
 
 def write_part_list(part_list, output_dir):
     if parts.should_split_part_list(part_list):
@@ -87,25 +94,68 @@ def write_color_filters(part_list, pyx_image, output_dir):
         )
 
 def main():
+    total_start_time = perf_counter()
     args = parser.parse_args()
     args.width = args.height if args.width is None else args.width
 
     out_path = Path(args.output_dir)
     Path.mkdir(out_path, parents=True, exist_ok=True)
 
-    pyx_image = image.pixelate(Path(args.input_path), args.height, args.width, args.dither)
+    if args.verbose: 
+        print("Pyxelating...")
+        start_time = perf_counter()
+        pyx_image = image.pixelate(Path(args.input_path), args.height, args.width, args.dither)
+        end_time = perf_counter()
+        print(f"Pyxelated in {end_time - start_time:.2f} seconds\n")
+    else:
+        pyx_image = image.pixelate(Path(args.input_path), args.height, args.width, args.dither)
+
+    if args.verbose: 
+        print("Zooming...")
+        start_time = perf_counter()
+        zoomed = image.get_zoomed_image(pyx_image)
+        end_time = perf_counter()
+        print(f"Zoomed in {end_time - start_time:.2f} seconds\n")
+    else:
+        zoomed = image.get_zoomed_image(pyx_image)
+
+    if args.verbose:
+        print("Drawing block indicator...")
+        start_time = perf_counter()
+        bordered = image.draw_block_indicator(zoomed)
+        end_time = perf_counter()
+        print(f"Drawn in {end_time - start_time:.2f} seconds\n")
+    else:
+        bordered = image.draw_block_indicator(zoomed)
+
     io.imsave(Path(out_path, "pyx.png"), pyx_image)
-    zoomed = image.get_zoomed_image(pyx_image)
-    bordered = image.draw_block_indicator(zoomed)
     io.imsave(Path(out_path, "output.png"), bordered)
 
-    part_list = parts.get_part_list(pyx_image)
-    write_part_list(part_list, args.output_dir)
+    if args.verbose: 
+        print("Generating part list...")
+        start_time = perf_counter()
+        part_list = parts.get_part_list(pyx_image)
+        write_part_list(part_list, args.output_dir)
+        end_time = perf_counter()
+        print(f"Generated in {end_time - start_time:.2f} seconds\n")
+    else:
+        part_list = parts.get_part_list(pyx_image)
+        write_part_list(part_list, args.output_dir)
 
-    if args.color_filters:
+    if args.color_filters and args.verbose:
+        print("Generating color filters...")
+        start_time = perf_counter()
+        write_color_filters(part_list, pyx_image, args.output_dir)
+        end_time = perf_counter()
+        print(f"Generated in {end_time - start_time:.2f} seconds\n")
+    elif args.color_filters:
         write_color_filters(part_list, pyx_image, args.output_dir)
 
-    print("Done!")
+    if args.verbose: 
+        end_time = perf_counter()
+        print(f"Done in {end_time - total_start_time:.2f} seconds!\n")
+    else:
+        print("Done!")
 
 
 if __name__ == "__main__":
