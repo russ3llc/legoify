@@ -73,27 +73,37 @@ pip install git+https://github.com/russ3llc/legoify.git --upgrade
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+There are two commands: `legoify` and `legoify-load`.
+
+### legoify
+`legoify` takes a full resolution picture, pixelates it, and generates the output images and part list.
 
 ```
-legoify "path/to/source/image.png" 32
+legoify "path/to/source/image.png" 32 -c
 ```
+
+### legoify-load
+`legoify-load` takes a pixelated picture (i.e. `pyx.png`) and generates the output images and part list. Useful if you want to manually adjust the output of `legoify`.
+
+```
+legoify-load "path/to/source/pyx.png" 32 -c
+```
+
 ### Positional Arguments
-| Argument   | Description                    | Example                                                     |
-| --------   | -----------                    | -------                                                     |
-| input_path | The path to the input image    | "C:\Users\hiimr\Pictures\Album Art\Father Of The Bride.jpg" |
-| height     | The height of the output image | 48                                                          |
+| Argument   | Description                    | Used with `legoify-load`? | Example                                                     |
+| --------   | -----------                    | ------------------------- | -------                                                     |
+| input_path | The path to the input image    | Yes                       | "C:\Users\hiimr\Pictures\Album Art\Father Of The Bride.jpg" |
+| height     | The height of the output image | No                        | 48                                                          |
 
 ### Options
-| Option          | Short Code | Description                                                                                                        | Example                                 |
-| ------          | ---------- | -----------                                                                                                        | -------                                 |
-| --help          | -h         | Lists arguments and options                                                                                        | N/A                                     |
-| --output_dir    | -o         | The path to output images. Defaults to 'Output'                                                                    | "C:\Users\hiimr\Pictures\Album Mosaics" |
-| --width         | -w         | The width of the output image. Defaults to height if not specified                                                 | 48                                      |
-| --dither        | -d         | The dither algorithm to use - `None` (default), `naive`, `bayer`, `floyd`, `atkinson` (ordered fastest to slowest) | naive                                   |
-| --verbose       | -v         | Display performance timers                                                                                         | N/A (this option is a flag)             |
-| --color_filters | -c         | Save additional reference images of individual colors (see below)                                                  | N/A (this option is a flag)             |
-
-<br>
+| Option          | Short Code | Description                                                                                                        | Used with `legoify-load`? | Example                                 |
+| ------          | ---------- | -----------                                                                                                        | ------------------------- | -------                                 |
+| --help          | -h         | Lists arguments and options                                                                                        | Yes                       | N/A                                     |
+| --output_dir    | -o         | The path to output images. Defaults to 'Output'                                                                    | Yes                       | "C:\Users\hiimr\Pictures\Album Mosaics" |
+| --width         | -w         | The width of the output image. Defaults to height if not specified                                                 | No                        | 48                                      |
+| --dither        | -d         | The dither algorithm to use - `None` (default), `naive`, `bayer`, `floyd`, `atkinson` (ordered fastest to slowest) | No                        | naive                                   |
+| --verbose       | -v         | Display performance timers                                                                                         | No                        | N/A (this option is a flag)             |
+| --color_filters | -c         | Save additional reference images of individual colors (see below)                                                  | Yes                       | N/A (this option is a flag)             |
 
 <figure>
   <img src="images/color-filter.png" alt="Album cover with only blue shown."/>
