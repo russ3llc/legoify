@@ -28,6 +28,7 @@ Source = "https://github.com/russ3llc/legoify"
 
 [project.scripts]
 legoify = "legoify.main:main"
+legoify-load = "legoify.main:load_existing"
 
 [tool.hatch.version]
 path = "src/legoify/__about__.py"
