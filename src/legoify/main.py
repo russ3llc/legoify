@@ -110,6 +110,8 @@ def load_existing():
     Path.mkdir(out_path, parents=True, exist_ok=True)
 
     pyx_image = io.imread(Path(args.input_path))
+    # Drop alpha channel
+    pyx_image = pyx_image[:, :, :3]
     zoomed_image = image.get_zoomed_image(pyx_image)
     bordered_image = image.draw_block_indicator(zoomed_image)
     io.imsave(Path(out_path, "output.png"), bordered_image)
